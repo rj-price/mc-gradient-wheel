@@ -9,9 +9,28 @@ interface ColorWheelProps {
 }
 
 const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart, selectedEnd }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [lightness, setLightness] = useState(50);
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({});
+  const [dimensions, setDimensions] = useState({ width: 500, height: 500 });
+
+  // Handle Resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        // Parent container might have padding, so we get the content width
+        const width = Math.min(containerRef.current.clientWidth, 1200);
+        setDimensions({ width, height: width });
+      }
+    };
+
+    handleResize();
+    const observer = new ResizeObserver(handleResize);
+    if (containerRef.current) observer.observe(containerRef.current);
+    
+    return () => observer.disconnect();
+  }, []);
 
   const rgbToHsl = (r: number, g: number, b: number) => {
     r /= 255; g /= 255; b /= 255;
@@ -47,15 +66,11 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
       img.onload = () => {
         loadedImages[block.id] = img;
         loadedCount++;
-        if (loadedCount === total) {
-          setImages(loadedImages);
-        }
+        if (loadedCount === total) setImages(loadedImages);
       };
       img.onerror = () => {
         loadedCount++;
-        if (loadedCount === total) {
-          setImages(loadedImages);
-        }
+        if (loadedCount === total) setImages(loadedImages);
       };
     });
   }, [blocks]);
@@ -66,17 +81,15 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    const { width, height } = dimensions;
     const centerX = width / 2;
     const centerY = height / 2;
-    const radius = Math.min(centerX, centerY) - 30;
+    const radius = Math.min(centerX, centerY) - 40;
 
     ctx.clearRect(0, 0, width, height);
 
     // Draw background wheel (gradient)
     for (let angle = 0; angle < 360; angle++) {
-      // Shift by -90 degrees to put Hue 0 (Red) at the top
       const startAngle = (angle - 0.5 - 90) * Math.PI / 180;
       const endAngle = (angle + 0.5 - 90) * Math.PI / 180;
       
@@ -94,8 +107,6 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
     // Plot blocks
     blocks.forEach(block => {
       const [h, s, l] = rgbToHsl(block.rgb[0], block.rgb[1], block.rgb[2]);
-      
-      // Only show blocks near current lightness
       const lightnessDiff = Math.abs(l - lightness);
       if (lightnessDiff > 15) return;
 
@@ -105,24 +116,24 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
       const y = centerY + dist * Math.sin(angleRad);
 
       const img = images[block.id];
-      const size = 16;
+      const size = Math.max(12, Math.round(width / 40));
 
       if (img) {
         ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
       } else {
         ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.arc(x, y, size / 3, 0, Math.PI * 2);
         ctx.fillStyle = block.hex;
         ctx.fill();
       }
       
       if (block.id === selectedStart?.id || block.id === selectedEnd?.id) {
         ctx.strokeStyle = block.id === selectedStart?.id ? '#fbbf24' : '#60a5fa';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = width > 800 ? 4 : 2;
         ctx.strokeRect(x - (size + 4) / 2, y - (size + 4) / 2, size + 4, size + 4);
       }
     });
-  }, [blocks, lightness, selectedStart, selectedEnd, images]);
+  }, [blocks, lightness, selectedStart, selectedEnd, images, dimensions]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -131,12 +142,13 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 20;
+    const { width, height } = dimensions;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(centerX, centerY) - 40;
 
     let closestBlock: Block | null = null;
-    let minDist = 15;
+    let minDist = 20;
 
     blocks.forEach(block => {
       const [h, s, l] = rgbToHsl(block.rgb[0], block.rgb[1], block.rgb[2]);
@@ -154,33 +166,39 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
       }
     });
 
-    if (closestBlock) {
-      onSelect(closestBlock);
-    }
+    if (closestBlock) onSelect(closestBlock);
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 bg-slate-800 p-6 rounded-xl shadow-lg">
-      <h2 className="text-xl font-bold">Colour Wheel</h2>
-      <canvas 
-        ref={canvasRef} 
-        width={500} 
-        height={500} 
-        onClick={handleCanvasClick}
-        className="cursor-crosshair rounded-full bg-slate-900 shadow-inner"
-      />
-      <div className="w-full max-w-xs">
-        <label className="block text-sm font-medium mb-2">Lightness Filter: {Math.round(lightness)}%</label>
+    <div ref={containerRef} className="flex flex-col items-center gap-6 bg-slate-900/40 backdrop-blur-md p-6 md:p-10 rounded-[2.5rem] border border-slate-800 shadow-2xl w-full">
+      <div className="flex justify-between items-center w-full mb-2">
+        <h2 className="text-xl font-black uppercase tracking-tighter text-slate-400">Color Spectrum</h2>
+        <div className="flex items-center gap-4 bg-slate-950/50 px-4 py-2 rounded-full border border-slate-800">
+           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Lightness</span>
+           <span className="text-sm font-black text-indigo-400 w-8">{Math.round(lightness)}%</span>
+        </div>
+      </div>
+      
+      <div className="relative w-full flex justify-center">
+        <canvas 
+          ref={canvasRef} 
+          width={dimensions.width} 
+          height={dimensions.height} 
+          onClick={handleCanvasClick}
+          className="cursor-crosshair rounded-full shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] transition-all"
+        />
+      </div>
+
+      <div className="w-full max-w-md pt-4">
         <input 
           type="range" 
           min="0" 
           max="100" 
           value={lightness} 
           onChange={(e) => setLightness(parseInt(e.target.value))}
-          className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+          className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 hover:accent-indigo-400 transition-all"
         />
       </div>
-      <p className="text-xs text-slate-400">Showing blocks within ±15% lightness</p>
     </div>
   );
 };
