@@ -8,7 +8,28 @@ import json
 class ColorProcessor:
     def __init__(self, textures_path, exclude_keywords=None):
         self.textures_path = textures_path
-        self.exclude_keywords = exclude_keywords or ["ore", "leaves", "command", "structure", "barrier"]
+        # Comprehensive exclusion list for non-solid building blocks
+        self.exclude_keywords = exclude_keywords or [
+            "ore", "leaves", "command", "structure", "barrier", "debug",
+            "sapling", "flower", "candle", "pane", "fire", "torch", "lamp",
+            "rail", "redstone", "comparator", "repeater", "dust", "wire",
+            "crop", "plant", "stem", "roots", "vines", "fan", "coral_fan",
+            "lily", "tulip", "orchid", "allium", "cornflower", "poppy", "daisy",
+            "peony", "rose", "sunflower", "lilac", "fern", "bush", "grass",
+            "pot", "sniffer_egg", "egg", "turtle_egg", "froglight", "shulker_box",
+            "glass", "translucent", "overlay", "destroy_stage", "door", "trapdoor",
+            "button", "pressure_plate", "lever", "daylight_detector", "observer",
+            "piston", "dispenser", "dropper", "hopper", "crafter", "furnace", "smoker",
+            "blast_furnace", "lectern", "brewing_stand", "cauldron", "composter",
+            "barrel", "chest", "ender_chest", "shulker", "bed", "anvil", "enchanting_table",
+            "crafting_table", "smithing_table", "cartography_table", "fletching_table",
+            "grindstone", "stonecutter", "loom", "jukebox", "note_block", "bell",
+            "campfire", "lantern", "conduit", "beacon", "dragon_egg", "cake", "scaffold",
+            "pointed_dripstone", "amethyst_cluster", "amethyst_bud", "budding_amethyst",
+            "small_dripleaf", "big_dripleaf", "spore_blossom", "azalea", "mangrove_propagule",
+            "hanging_roots", "sculk_shrieker", "sculk_sensor", "sculk_catalyst", "sculk_vein",
+            "trial_spawner", "vault", "heavy_core"
+        ]
         self.block_data = []
 
     def is_excluded(self, filename):
