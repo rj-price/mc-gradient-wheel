@@ -15,7 +15,8 @@ class ColorProcessor:
             "rail", "redstone", "comparator", "repeater", "dust", "wire",
             "crop", "plant", "stem", "roots", "vines", "fan", "coral_fan",
             "lily", "tulip", "orchid", "allium", "cornflower", "poppy", "daisy",
-            "peony", "rose", "sunflower", "lilac", "fern", "bush", "grass",
+            "peony", "rose", "sunflower", "lilac", "dandelion", "azure_bluet",
+            "oxeye_daisy", "fern", "bush", "grass", "mushroom", "fungus",
             "pot", "sniffer_egg", "egg", "turtle_egg", "froglight", "shulker_box",
             "glass", "translucent", "overlay", "destroy_stage", "door", "trapdoor",
             "button", "pressure_plate", "lever", "daylight_detector", "observer",
@@ -28,7 +29,8 @@ class ColorProcessor:
             "pointed_dripstone", "amethyst_cluster", "amethyst_bud", "budding_amethyst",
             "small_dripleaf", "big_dripleaf", "spore_blossom", "azalea", "mangrove_propagule",
             "hanging_roots", "sculk_shrieker", "sculk_sensor", "sculk_catalyst", "sculk_vein",
-            "trial_spawner", "vault", "heavy_core"
+            "trial_spawner", "vault", "heavy_core", "stage", "wheat", "beetroots", "potatoes", "carrots",
+            "farmland", "path"
         ]
         self.block_data = []
 
