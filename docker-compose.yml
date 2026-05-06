@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8016:8000"
+    volumes:
+      - ./textures:/app/assets/textures
+    environment:
+      - TEXTURES_PATH=/app/assets/textures
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3020:80"
+    volumes:
+      - ./textures:/usr/share/nginx/html/textures:ro
+    depends_on:
+      - backend
+    restart: unless-stopped

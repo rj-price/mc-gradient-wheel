@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+backend/__pycache__/
+backend/*.pyc
+.env
+
+# Build outputs
+frontend/dist/
+frontend/build/
+
+# IDEs
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Project specific
+textures/*.png
+client.jar
