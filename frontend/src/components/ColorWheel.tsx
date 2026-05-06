@@ -173,10 +173,6 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
     <div ref={containerRef} className="flex flex-col items-center gap-6 bg-slate-900/40 backdrop-blur-md p-6 md:p-10 rounded-[2.5rem] border border-slate-800 shadow-2xl w-full">
       <div className="flex justify-between items-center w-full mb-2">
         <h2 className="text-xl font-black uppercase tracking-tighter text-slate-400">Color Spectrum</h2>
-        <div className="flex items-center gap-4 bg-slate-950/50 px-4 py-2 rounded-full border border-slate-800">
-           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Lightness</span>
-           <span className="text-sm font-black text-indigo-400 w-8">{Math.round(lightness)}%</span>
-        </div>
       </div>
       
       <div className="relative w-full flex justify-center">
@@ -189,7 +185,11 @@ const ColorWheel: React.FC<ColorWheelProps> = ({ blocks, onSelect, selectedStart
         />
       </div>
 
-      <div className="w-full max-w-md pt-4">
+      <div className="w-full max-w-md pt-4 space-y-3">
+        <div className="flex justify-between items-center px-1">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Lightness</label>
+          <span className="text-sm font-black text-indigo-400">{Math.round(lightness)}%</span>
+        </div>
         <input 
           type="range" 
           min="0" 

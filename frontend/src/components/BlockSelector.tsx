@@ -60,8 +60,8 @@ const BlockSelector: React.FC<BlockSelectorProps> = ({ blocks, onSelect, label, 
             className="fixed inset-0 z-40" 
             onClick={() => setIsOpen(false)}
           ></div>
-          <div className="absolute top-full left-0 right-0 mt-2 bg-slate-850 border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[400px]">
-            <div className="p-3 bg-slate-800 border-b border-slate-700">
+          <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[400px]">
+            <div className="p-3 bg-slate-900 border-b border-slate-700">
               <input
                 autoFocus
                 type="text"
